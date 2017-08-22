@@ -1,0 +1,4 @@
+<resources>
+	<string name="app_name">CameraView</string>
+	<string name="error_camera">Cannot open camera</string>
+</resources>

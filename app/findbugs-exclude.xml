@@ -1,0 +1,20 @@
+<FindBugsFilter>
+	<Match>
+		<Class name="~.*R\$.*"/>
+	</Match>
+	<Match>
+		<Class name="~.*Manifest\$.*"/>
+	</Match>
+	<Match>
+		<Class name="~.android.support.*"/>
+	</Match>
+	<Match>
+		<Class name="de.markusfisch.android.cameraviewdemo.activity.MainActivity"/>
+		<Or>
+			<Method name="onPause"/>
+			<Method name="onResume"/>
+		</Or>
+		<!-- manually invoking garbage collection is okay for Dalvik -->
+		<Bug pattern="DM_GC"/>
+	</Match>
+</FindBugsFilter>

@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+apply plugin: 'findbugs'
+apply plugin: 'net.ltgt.errorprone'
+
+configurations.errorprone {
+	resolutionStrategy.force 'com.google.errorprone:error_prone_core:2.0.19'
+}
+
+android {
+	compileSdkVersion sdk_version
+	buildToolsVersion build_tools_version
+
+	defaultConfig {
+		minSdkVersion 9
+		targetSdkVersion sdk_version
+
+		versionCode 1
+		versionName '0.0.0'
+	}
+}
+
+dependencies {
+	compile "com.android.support:appcompat-v7:$support_version"
+	compile project(':cameraview')
+}
+
+task findbugs(type: FindBugs, dependsOn: 'assembleDebug') {
+	excludeFilter = file('./findbugs-exclude.xml')
+	source = fileTree('src/main/java/')
+	classes = files("${project.rootDir}/app/build/intermediates/classes")
+	classpath = files()
+
+	effort = 'max'
+
+	reports {
+		xml.enabled = false
+		html.enabled = true
+	}
+}
