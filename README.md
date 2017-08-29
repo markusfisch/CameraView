@@ -46,7 +46,7 @@ Add it to a layout:
 
 	<de.markusfisch.android.cameraview.widget.CameraView
 		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:id="@+id/swipe_view"
+		android:id="@+id/camera_view"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 
