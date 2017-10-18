@@ -78,7 +78,12 @@ frame, set an OnCameraListener:
 	cameraView.setOnCameraListener(new OnCameraListener {
 		@Override
 		public void onConfigureParameters(Camera.Parameters parameters) {
-			// set additional parameters here
+			// set additional camera parameters here
+		}
+
+		@Override
+		public void onCameraError(Camera camera) {
+			// handle camera errors
 		}
 
 		@Override
