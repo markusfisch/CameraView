@@ -22,7 +22,7 @@ repositories:
 Then add the dependency in your app/build.gradle:
 
 	dependencies {
-		compile 'com.github.markusfisch:CameraView:1.0.0'
+		compile 'com.github.markusfisch:CameraView:1.1.0'
 	}
 
 ### As subproject
