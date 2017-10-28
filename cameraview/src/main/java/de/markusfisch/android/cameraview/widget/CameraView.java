@@ -274,7 +274,7 @@ public class CameraView extends FrameLayout {
 		Camera.Size bestSizeAspect = null;
 
 		for (Camera.Size size : sizes) {
-			double diff = Math.abs(size.height - height) +
+			double diff = (double) Math.abs(size.height - height) +
 					Math.abs(size.width - width);
 
 			if (diff < minDiff) {
