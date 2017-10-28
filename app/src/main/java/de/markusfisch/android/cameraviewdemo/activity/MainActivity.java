@@ -49,7 +49,9 @@ public class MainActivity extends AppCompatActivity {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 		checkPermissions();
-		setContentView((cameraView = new CameraView(this)));
+
+		cameraView = new CameraView(this);
+		setContentView(cameraView);
 	}
 
 	@Override
