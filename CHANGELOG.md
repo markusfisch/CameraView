@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.2.1
+* Fixes two formal issues static analyzers will complain about
+
 ## 1.2.0
 * OnCameraListener.onCameraError() gets called when Camera.open() fails too
 
