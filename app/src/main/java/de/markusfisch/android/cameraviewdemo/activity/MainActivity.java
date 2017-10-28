@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		System.gc();
 		cameraView.openAsync(CameraView.findCameraId(
 				Camera.CameraInfo.CAMERA_FACING_BACK));
 	}
@@ -64,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
 	public void onPause() {
 		super.onPause();
 		cameraView.close();
-		System.gc();
 	}
 
 	private void checkPermissions() {
