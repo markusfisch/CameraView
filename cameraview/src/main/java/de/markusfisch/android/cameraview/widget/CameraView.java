@@ -307,6 +307,7 @@ public class CameraView extends FrameLayout {
 		holder.addCallback(new SurfaceHolder.Callback() {
 			@Override
 			public void surfaceCreated(SurfaceHolder holder) {
+				// wait until the surface has dimensions
 			}
 
 			@Override
