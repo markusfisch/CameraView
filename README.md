@@ -1,6 +1,6 @@
 # CameraView
 
-![Travis-ci](https://api.travis-ci.org/markusfisch/CameraView.svg)
+<a href="https://travis-ci.org/markusfisch/CameraView"><img src="https://api.travis-ci.org/markusfisch/CameraView.svg" alt="Travis-ci"/></a>
 
 Camera view for Android. Supports orientation changes, fits preview image
 into available view space and works with Gingerbread (minSDK 9) or better
