@@ -1,5 +1,7 @@
 # CameraView
 
+[![](https://jitpack.io/v/markusfisch/CameraView.svg)](https://jitpack.io/#markusfisch/CameraView)
+
 Camera view for Android. Supports orientation changes, fits preview image
 into available view space and works with Gingerbread (minSDK 9) or better
 (since it still uses the deprecated Camera API).
@@ -22,7 +24,7 @@ repositories:
 Then add the dependency in your app/build.gradle:
 
 	dependencies {
-		compile 'com.github.markusfisch:CameraView:1.1.0'
+		compile 'com.github.markusfisch:CameraView:1.3.2'
 	}
 
 ### As subproject

@@ -10,6 +10,8 @@ buildscript {
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+group = 'com.github.markusfisch'
 
 android {
 	compileSdkVersion sdk_version
