@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.2
+* Fixed Gradle configuration for JitPack
+
 ## 1.3.1
 * Fixed closing the camera immediately after openAsync()
 
