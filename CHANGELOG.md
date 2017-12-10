@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.3.1
+* Fixed closing the camera immediately after openAsync()
+
 ## 1.3.0
 * Helper functions to easily set a focus area (required for tap to focus)
 
