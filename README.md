@@ -41,6 +41,10 @@ And to the dependencies block of your `app/build.gradle`:
 		compile project(':cameraview')
 	}
 
+Then remove the Android Maven plug-in from `cameraview/build.gradle`:
+
+	apply plugin: 'com.github.dcendents.android-maven'
+
 Because `cameraview/build.gradle` uses variables to manage version
 numbers of Android's dependencies, you need to define them in you root
 `build.gradle` (or replace the variables with literals):
