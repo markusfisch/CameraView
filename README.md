@@ -6,8 +6,7 @@ Camera view for Android. Supports orientation changes, fits preview image
 into available view space and works with Gingerbread (minSDK 9) or better
 (since it still uses the deprecated Camera API).
 
-How to include
---------------
+## How to include
 
 ### Gradle
 
@@ -55,8 +54,7 @@ numbers of Android's dependencies, you need to define them in you root
 		...
 	}
 
-How to use
-----------
+## How to use
 
 Add it to a layout:
 
@@ -113,14 +111,12 @@ frame, set an OnCameraListener:
 		}
 	});
 
-Demo
-----
+## Demo
 
 This is a demo app you may use to see and try if this widget is what
 you're searching for. Either import it into Android Studio or, if you're
 not on that thing from Redmond, just type make to build, install and run.
 
-License
--------
+## License
 
 This widget is so basic, it should be Public Domain. And it is.
