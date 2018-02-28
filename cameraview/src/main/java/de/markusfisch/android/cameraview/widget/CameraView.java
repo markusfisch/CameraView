@@ -23,6 +23,7 @@ public class CameraView extends FrameLayout {
 		void onConfigureParameters(Camera.Parameters parameters);
 		void onCameraError();
 		void onCameraStarted(Camera camera);
+		void onPreviewStarted(Camera camera);
 		void onCameraStopping(Camera camera);
 	}
 
@@ -376,6 +377,9 @@ public class CameraView extends FrameLayout {
 					return;
 				}
 				cam.startPreview();
+				if (onCameraListener != null) {
+					onCameraListener.onPreviewStarted(cam);
+				}
 			}
 
 			@Override
