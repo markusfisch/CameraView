@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.4.0
+* Adds OnCameraListener.onPreviewStarted() callback
+
 ## 1.3.3
 * Fixed Gradle configuration for JitPack again
 
