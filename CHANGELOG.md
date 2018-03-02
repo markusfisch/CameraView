@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.0
+* Fix relative camera orientation for front facing cameras
+* Rename OnCameraListener.onCameraStarted() to onCameraReady()
+
 ## 1.4.0
 * Adds OnCameraListener.onPreviewStarted() callback
 
