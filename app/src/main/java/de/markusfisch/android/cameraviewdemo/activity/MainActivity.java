@@ -11,12 +11,15 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 	private static final int REQUEST_CAMERA = 1;
+
+	private static boolean frontFacing = false;
 
 	private CameraView cameraView;
 
@@ -51,14 +54,20 @@ public class MainActivity extends AppCompatActivity {
 		checkPermissions();
 
 		cameraView = new CameraView(this);
+		cameraView.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				invertCamera();
+			}
+		});
+
 		setContentView(cameraView);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		cameraView.openAsync(CameraView.findCameraId(
-				Camera.CameraInfo.CAMERA_FACING_BACK));
+		cameraView.openAsync(CameraView.findCameraId(getFacing()));
 	}
 
 	@Override
@@ -77,5 +86,17 @@ public class MainActivity extends AppCompatActivity {
 					new String[]{permission},
 					REQUEST_CAMERA);
 		}
+	}
+
+	private void invertCamera() {
+		frontFacing ^= true;
+		cameraView.close();
+		cameraView.openAsync(CameraView.findCameraId(getFacing()));
+	}
+
+	private int getFacing() {
+		return frontFacing ?
+				Camera.CameraInfo.CAMERA_FACING_FRONT :
+				Camera.CameraInfo.CAMERA_FACING_BACK;
 	}
 }
