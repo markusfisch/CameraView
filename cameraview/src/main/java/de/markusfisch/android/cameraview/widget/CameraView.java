@@ -49,10 +49,16 @@ public class CameraView extends FrameLayout {
 		return -1;
 	}
 
-	public static int getCameraOrientation(Context context, int cameraId) {
+	public static int getRelativeCameraOrientation(
+			Context context,
+			int cameraId) {
 		Camera.CameraInfo info = new Camera.CameraInfo();
 		Camera.getCameraInfo(cameraId, info);
-		return (info.orientation - getDeviceRotation(context) + 360) % 360;
+		int orientation = info.orientation;
+		if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+			orientation -= 180;
+		}
+		return (orientation - getDeviceRotation(context) + 360) % 360;
 	}
 
 	public static int getDeviceRotation(Context context) {
@@ -156,7 +162,9 @@ public class CameraView extends FrameLayout {
 					close();
 					return;
 				}
-				frameOrientation = getCameraOrientation(context, cameraId);
+				frameOrientation = getRelativeCameraOrientation(
+						context,
+						cameraId);
 				if (viewWidth > 0) {
 					setCameraParameters(context);
 				}
