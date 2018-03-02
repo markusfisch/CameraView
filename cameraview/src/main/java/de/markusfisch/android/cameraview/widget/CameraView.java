@@ -22,7 +22,7 @@ public class CameraView extends FrameLayout {
 	public interface OnCameraListener {
 		void onConfigureParameters(Camera.Parameters parameters);
 		void onCameraError();
-		void onCameraStarted(Camera camera);
+		void onCameraReady(Camera camera);
 		void onPreviewStarted(Camera camera);
 		void onCameraStopping(Camera camera);
 	}
@@ -296,7 +296,7 @@ public class CameraView extends FrameLayout {
 		addSurfaceView(context, childWidth, childHeight);
 
 		if (onCameraListener != null) {
-			onCameraListener.onCameraStarted(cam);
+			onCameraListener.onCameraReady(cam);
 		}
 	}
 
