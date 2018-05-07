@@ -1,5 +1,6 @@
 package de.markusfisch.android.cameraview.widget;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Rect;
@@ -120,6 +121,10 @@ public class CameraView extends FrameLayout {
 		super(context, attrs, defStyleAttr);
 	}
 
+	// this AsyncTask is running for a short and finite time only
+	// and it's perfectly okay to delay garbage collection of the
+	// parent instance until this task has ended
+	@SuppressLint("StaticFieldLeak")
 	public void openAsync(final int cameraId) {
 		isOpen = true;
 		new AsyncTask<Void, Void, Camera>() {
