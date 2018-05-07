@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.6.0
+* Add setUseOrientationListener() to fix landscape to landscape rotations
+
 ## 1.5.0
 * Fix relative camera orientation for front facing cameras
 * Rename OnCameraListener.onCameraStarted() to onCameraReady()
