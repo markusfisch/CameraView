@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 		checkPermissions();
 
 		cameraView = new CameraView(this);
+		cameraView.setUseOrientationListener(true);
 		cameraView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -67,13 +68,13 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		cameraView.openAsync(CameraView.findCameraId(getFacing()));
+		openCameraView();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		cameraView.close();
+		closeCameraView();
 	}
 
 	private void checkPermissions() {
@@ -88,10 +89,18 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	private void openCameraView() {
+		cameraView.openAsync(CameraView.findCameraId(getFacing()));
+	}
+
+	private void closeCameraView() {
+		cameraView.close();
+	}
+
 	private void invertCamera() {
 		frontFacing ^= true;
-		cameraView.close();
-		cameraView.openAsync(CameraView.findCameraId(getFacing()));
+		closeCameraView();
+		openCameraView();
 	}
 
 	private int getFacing() {

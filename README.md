@@ -70,6 +70,15 @@ Or create it in java:
 
 	CameraView cameraView = new CameraView(context);
 
+If your app supports orientation changes, please also enable the built-in
+orientation listener:
+
+	cameraView.setUseOrientationListener(true);
+
+This will take care of landscape to reverse landscape rotations (and vice
+versa). Without this, Android will re-use the Activity without calling a
+life cycle method what will result in an upside down camera preview.
+
 Run `CameraView.openAsync()`/`.close()` in `onResume()`/`onPause()` of
 your activity or fragment:
 

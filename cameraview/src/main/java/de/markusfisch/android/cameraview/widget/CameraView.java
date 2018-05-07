@@ -5,9 +5,12 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.Display;
+import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -31,13 +34,15 @@ public class CameraView extends FrameLayout {
 	public final Rect previewRect = new Rect();
 
 	private boolean isOpen = false;
+	private boolean useOrientationListener = false;
 	private Camera cam;
 	private int viewWidth;
 	private int viewHeight;
 	private int frameWidth;
 	private int frameHeight;
 	private int frameOrientation;
-	private OnCameraListener onCameraListener;
+	private OnCameraListener cameraListener;
+	private OrientationEventListener orientationListener;
 
 	public static int findCameraId(int facing) {
 		for (int i = 0, l = Camera.getNumberOfCameras(); i < l; ++i) {
@@ -121,6 +126,10 @@ public class CameraView extends FrameLayout {
 		super(context, attrs, defStyleAttr);
 	}
 
+	public void setUseOrientationListener(boolean use) {
+		useOrientationListener = use;
+	}
+
 	// this AsyncTask is running for a short and finite time only
 	// and it's perfectly okay to delay garbage collection of the
 	// parent instance until this task has ended
@@ -153,11 +162,11 @@ public class CameraView extends FrameLayout {
 					return;
 				}
 				if (camera == null) {
-					if (onCameraListener != null &&
+					if (cameraListener != null &&
 							// run onCameraError() only if there
 							// isn't an open camera yet
 							cam == null) {
-						onCameraListener.onCameraError();
+						cameraListener.onCameraError();
 					}
 					return;
 				}
@@ -167,11 +176,14 @@ public class CameraView extends FrameLayout {
 					close();
 					return;
 				}
+				if (useOrientationListener) {
+					enableOrientationListener(context, cameraId);
+				}
 				frameOrientation = getRelativeCameraOrientation(
 						context,
 						cameraId);
 				if (viewWidth > 0) {
-					setCameraParameters(context);
+					addPreview(context);
 				}
 			}
 		}.execute();
@@ -180,8 +192,12 @@ public class CameraView extends FrameLayout {
 	public void close() {
 		isOpen = false;
 		if (cam != null) {
-			if (onCameraListener != null) {
-				onCameraListener.onCameraStopping(cam);
+			if (orientationListener != null) {
+				orientationListener.disable();
+				orientationListener = null;
+			}
+			if (cameraListener != null) {
+				cameraListener.onCameraStopping(cam);
 			}
 			cam.stopPreview();
 			cam.setPreviewCallback(null);
@@ -192,7 +208,7 @@ public class CameraView extends FrameLayout {
 	}
 
 	public void setOnCameraListener(OnCameraListener listener) {
-		onCameraListener = listener;
+		cameraListener = listener;
 	}
 
 	public Camera getCamera() {
@@ -265,30 +281,38 @@ public class CameraView extends FrameLayout {
 			if (context == null) {
 				return;
 			}
-			setCameraParameters(context);
+			addPreview(context);
 		}
 	}
 
-	private void setCameraParameters(Context context) {
-		boolean transpose = frameOrientation == 90 || frameOrientation == 270;
-
-		try {
-			Camera.Parameters parameters = cam.getParameters();
-			parameters.setRotation(frameOrientation);
-			setPreviewSize(parameters, transpose);
-			if (onCameraListener != null) {
-				onCameraListener.onConfigureParameters(parameters);
+	private void enableOrientationListener(Context context,
+			final int cameraId) {
+		final Display defaultDisplay = ((WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+		final int defaultOrientation = defaultDisplay.getRotation();
+		orientationListener = new OrientationEventListener(context,
+				SensorManager.SENSOR_DELAY_NORMAL) {
+			@Override
+			public void onOrientationChanged(int orientation) {
+				if (defaultOrientation != defaultDisplay.getRotation()) {
+					close();
+					openAsync(cameraId);
+				}
 			}
-			cam.setParameters(parameters);
+		};
+		orientationListener.enable();
+	}
+
+	private void addPreview(Context context) {
+		boolean transpose;
+		try {
+			transpose = setCameraParameters();
 		} catch (RuntimeException e) {
-			if (onCameraListener != null) {
-				onCameraListener.onCameraError();
+			if (cameraListener != null) {
+				cameraListener.onCameraError();
 			}
 			return;
 		}
-
-		cam.setDisplayOrientation(frameOrientation);
-
 		int childWidth;
 		int childHeight;
 		if (transpose) {
@@ -299,10 +323,22 @@ public class CameraView extends FrameLayout {
 			childHeight = frameHeight;
 		}
 		addSurfaceView(context, childWidth, childHeight);
-
-		if (onCameraListener != null) {
-			onCameraListener.onCameraReady(cam);
+		if (cameraListener != null) {
+			cameraListener.onCameraReady(cam);
 		}
+	}
+
+	private boolean setCameraParameters() throws RuntimeException {
+		boolean transpose = frameOrientation == 90 || frameOrientation == 270;
+		Camera.Parameters parameters = cam.getParameters();
+		parameters.setRotation(frameOrientation);
+		setPreviewSize(parameters, transpose);
+		if (cameraListener != null) {
+			cameraListener.onConfigureParameters(parameters);
+		}
+		cam.setParameters(parameters);
+		cam.setDisplayOrientation(frameOrientation);
+		return transpose;
 	}
 
 	private void setPreviewSize(
@@ -390,8 +426,8 @@ public class CameraView extends FrameLayout {
 					return;
 				}
 				cam.startPreview();
-				if (onCameraListener != null) {
-					onCameraListener.onPreviewStarted(cam);
+				if (cameraListener != null) {
+					cameraListener.onPreviewStarted(cam);
 				}
 			}
 
