@@ -110,8 +110,13 @@ frame, set an OnCameraListener:
 		}
 
 		@Override
-		public void onCameraStarted(Camera camera) {
+		public void onCameraReady(Camera camera) {
 			// set a preview listener
+		}
+
+		@Override
+		public void onPreviewStarted(Camera camera) {
+			// start processing camera data
 		}
 
 		@Override
