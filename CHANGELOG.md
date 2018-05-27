@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.7.0
+* Improve reliability of opening the camera
+* Does only restart the camera for 180deg changes in orientation listener
+
 ## 1.6.0
 * Add setUseOrientationListener() to fix landscape to landscape rotations
 
