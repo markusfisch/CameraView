@@ -36,6 +36,7 @@ public class CameraView extends FrameLayout {
 	private boolean isOpen = false;
 	private boolean useOrientationListener = false;
 	private Camera cam;
+	private int tries = 0;
 	private int viewWidth;
 	private int viewHeight;
 	private int frameWidth;
@@ -135,6 +136,9 @@ public class CameraView extends FrameLayout {
 	// parent instance until this task has ended
 	@SuppressLint("StaticFieldLeak")
 	public void openAsync(final int cameraId) {
+		if (isOpen) {
+			return;
+		}
 		isOpen = true;
 		new AsyncTask<Void, Void, Camera>() {
 			@Override
@@ -163,13 +167,20 @@ public class CameraView extends FrameLayout {
 				}
 				if (camera == null) {
 					if (cameraListener != null &&
-							// run onCameraError() only if there
+							// only throw onCameraError() if there
 							// isn't an open camera yet
 							cam == null) {
-						cameraListener.onCameraError();
+						if (tries < 3) {
+							isOpen = false;
+							openAsync(cameraId);
+							++tries;
+						} else {
+							cameraListener.onCameraError();
+						}
 					}
 					return;
 				}
+				tries = 0;
 				cam = camera;
 				Context context = getContext();
 				if (context == null) {
