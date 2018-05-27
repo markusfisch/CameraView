@@ -294,7 +294,8 @@ public class CameraView extends FrameLayout {
 				SensorManager.SENSOR_DELAY_NORMAL) {
 			@Override
 			public void onOrientationChanged(int orientation) {
-				if (defaultOrientation != defaultDisplay.getRotation()) {
+				if (Math.abs(defaultOrientation -
+						defaultDisplay.getRotation()) == 2) {
 					close();
 					openAsync(cameraId);
 				}
