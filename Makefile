@@ -21,6 +21,9 @@ sonarqube:
 release: lint findbugs
 	./gradlew assembleRelease
 
+aar:
+	./gradlew :cameraview:assembleRelease
+
 install:
 	adb $(TARGET) install -r $(APK)
 
