@@ -4,11 +4,7 @@
 	package="de.markusfisch.android.cameraviewdemo"
 	android:installLocation="auto">
 	<supports-screens
-		android:anyDensity="true"
 		android:largeScreens="true"
-		android:normalScreens="true"
-		android:resizeable="true"
-		android:smallScreens="true"
 		android:xlargeScreens="true"/>
 	<uses-permission android:name="android.permission.CAMERA"/>
 	<uses-feature android:name="android.hardware.camera"/>
