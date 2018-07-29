@@ -1,56 +1,22 @@
 # CameraView
 
-[![](https://jitpack.io/v/markusfisch/CameraView.svg)](https://jitpack.io/#markusfisch/CameraView)
-
 Camera view for Android. Supports orientation changes, fits preview image
 into available view space and works with Gingerbread (minSDK 9) or better
 (since it still uses the deprecated Camera API).
 
 ## How to include
 
-### Gradle
+### Android Archive
 
-Add the JitPack repository in your root build.gradle at the end of
-repositories:
+Just download the latest `aar` from
+[Releases](https://github.com/markusfisch/CameraView/releases) and put it
+into `app/libs` in your app.
 
-	allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
-	}
-
-Then add the dependency in your app/build.gradle:
+Then make sure your `app/build.gradle` contains the following line in the
+`dependencies` block:
 
 	dependencies {
-		compile 'com.github.markusfisch:CameraView:1.7.0'
-	}
-
-### As subproject
-
-If you prefer your project to be self-reliant and completely modifiable,
-just copy the `cameraview` folder into your project root and add it as a
-subproject to `settings.gradle`:
-
-	include ':app', ':cameraview'
-
-And to the dependencies block of your `app/build.gradle`:
-
-	dependencies {
-		compile project(':cameraview')
-	}
-
-Then remove the Android Maven plug-in from `cameraview/build.gradle`:
-
-	apply plugin: 'com.github.dcendents.android-maven'
-
-Because `cameraview/build.gradle` uses variables to manage version
-numbers of Android's dependencies, you need to define them in you root
-`build.gradle` (or replace the variables with literals):
-
-	buildscript {
-		ext.tools_version = '2.3.3'
-		ext.support_version = '25.3.1'
+		implementation fileTree(dir: 'libs', include: '*')
 		...
 	}
 
@@ -70,7 +36,7 @@ Or create it in java:
 
 	CameraView cameraView = new CameraView(context);
 
-If your app supports orientation changes, please also enable the built-in
+If your app supports *orientation changes*, please also enable the built-in
 orientation listener:
 
 	cameraView.setUseOrientationListener(true);
