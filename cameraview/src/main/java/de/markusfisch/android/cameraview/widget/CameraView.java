@@ -25,9 +25,13 @@ import java.util.List;
 public class CameraView extends FrameLayout {
 	public interface OnCameraListener {
 		void onConfigureParameters(Camera.Parameters parameters);
+
 		void onCameraError();
+
 		void onCameraReady(Camera camera);
+
 		void onPreviewStarted(Camera camera);
+
 		void onCameraStopping(Camera camera);
 	}
 
@@ -348,6 +352,11 @@ public class CameraView extends FrameLayout {
 		if (cameraListener != null) {
 			cameraListener.onConfigureParameters(parameters);
 		}
+		Camera.Size size = parameters.getPreviewSize();
+		if (size != null) {
+			frameWidth = size.width;
+			frameHeight = size.height;
+		}
 		cam.setParameters(parameters);
 		cam.setDisplayOrientation(frameOrientation);
 		return transpose;
@@ -368,11 +377,7 @@ public class CameraView extends FrameLayout {
 				parameters.getSupportedPreviewSizes(),
 				frameWidth,
 				frameHeight);
-		if (size != null) {
-			frameWidth = size.width;
-			frameHeight = size.height;
-			parameters.setPreviewSize(frameWidth, frameHeight);
-		}
+		parameters.setPreviewSize(size.width, size.height);
 	}
 
 	private static Camera.Size findBestPreviewSize(
