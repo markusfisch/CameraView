@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.7.1
+* Allow setting a custom preview size in onConfigureParameters()
+
 ## 1.7.0
 * Improve reliability of opening the camera
 * Does only restart the camera for 180deg changes in orientation listener
