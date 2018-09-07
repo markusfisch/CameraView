@@ -116,6 +116,38 @@ public class CameraView extends FrameLayout {
 		return true;
 	}
 
+	public static Camera.Size findBestPreviewSize(
+			List<Camera.Size> sizes,
+			int width,
+			int height) {
+		final double ASPECT_TOLERANCE = 0.1;
+		double targetRatio = (double) width / height;
+		double minDiff = Double.MAX_VALUE;
+		double minDiffAspect = Double.MAX_VALUE;
+		Camera.Size bestSize = null;
+		Camera.Size bestSizeAspect = null;
+
+		for (Camera.Size size : sizes) {
+			double diff = (double) Math.abs(size.height - height) +
+					Math.abs(size.width - width);
+
+			if (diff < minDiff) {
+				bestSize = size;
+				minDiff = diff;
+			}
+
+			double ratio = (double) size.width / size.height;
+
+			if (Math.abs(ratio - targetRatio) < ASPECT_TOLERANCE &&
+					diff < minDiffAspect) {
+				bestSizeAspect = size;
+				minDiffAspect = diff;
+			}
+		}
+
+		return bestSizeAspect != null ? bestSizeAspect : bestSize;
+	}
+
 	public CameraView(Context context) {
 		super(context);
 	}
@@ -378,38 +410,6 @@ public class CameraView extends FrameLayout {
 				frameWidth,
 				frameHeight);
 		parameters.setPreviewSize(size.width, size.height);
-	}
-
-	private static Camera.Size findBestPreviewSize(
-			List<Camera.Size> sizes,
-			int width,
-			int height) {
-		final double ASPECT_TOLERANCE = 0.1;
-		double targetRatio = (double) width / height;
-		double minDiff = Double.MAX_VALUE;
-		double minDiffAspect = Double.MAX_VALUE;
-		Camera.Size bestSize = null;
-		Camera.Size bestSizeAspect = null;
-
-		for (Camera.Size size : sizes) {
-			double diff = (double) Math.abs(size.height - height) +
-					Math.abs(size.width - width);
-
-			if (diff < minDiff) {
-				bestSize = size;
-				minDiff = diff;
-			}
-
-			double ratio = (double) size.width / size.height;
-
-			if (Math.abs(ratio - targetRatio) < ASPECT_TOLERANCE &&
-					diff < minDiffAspect) {
-				bestSizeAspect = size;
-				minDiffAspect = diff;
-			}
-		}
-
-		return bestSizeAspect != null ? bestSizeAspect : bestSize;
 	}
 
 	private void addSurfaceView(
