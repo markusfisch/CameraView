@@ -21,7 +21,7 @@ sonarqube:
 release: lint findbugs
 	./gradlew assembleRelease
 
-aar:
+aar: clean
 	./gradlew :cameraview:assembleRelease
 
 install:
