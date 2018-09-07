@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.7.2
+* Expose findBestPreviewSize() to ease setting a custom preview size
+
 ## 1.7.1
 * Allow setting a custom preview size in onConfigureParameters()
 
