@@ -91,11 +91,130 @@ frame, set an OnCameraListener:
 		}
 	});
 
+## Preview resolution
+
+By default CameraView picks the camera preview resolution that is closest
+to the size of the view on screen. If you want a lower or higher resolution,
+you may use `CameraView.findBestPreviewSize()` (or a customized copy of it)
+in `OnCameraListener.onConfigureParameters()` to pick another size.
+
+For example, if you want to pick the highest possible resolution, you can
+do this:
+
+	cameraView.setOnCameraListener(new OnCameraListener {
+		@Override
+		public void onConfigureParameters(Camera.Parameters parameters) {
+			Camera.Size size = findBestPreviewSize(
+					parameters.getSupportedPreviewSizes(),
+					cameraView.getFrameWidth() * 1000,
+					cameraView.getFrameHeight() * 1000);
+			parameters.setPreviewSize(size.width, size.height);
+			...
+		}
+		...
+
+`CameraView.findBestPreviewSize()` returns the preview resolution that has
+the smallest absolute distance to the given dimensions *and* is as close to
+the aspect ratio of those dimensions as possible.
+
+## Auto Focus
+
+To enable Auto Focus, you should run `CameraView.setAutoFocus()` in
+`OnCameraListener.onConfigureParameters()`:
+
+	cameraView.setOnCameraListener(new OnCameraListener {
+		@Override
+		public void onConfigureParameters(Camera.Parameters parameters) {
+			CameraView.setAutoFocus(parameters);
+			...
+		}
+		...
+
+`CameraView.setAutoFocus()` picks the best available Auto Focus mode for
+making pictures. If you want something else, just have a look at this
+method and re-implement it in the client to fit your needs.
+
+Note that Auto Focus is not available on all devices. If your app depends
+on Auto Focus, you should put a `<uses-feature/>` tag in your
+`AndroidManifest.xml` to make Google Play restrict your app to devices
+that sport this feature:
+
+	<uses-feature android:name="android.hardware.camera.autofocus"/>
+
+## Tap to focus
+
+To focus where a user taps on screen, you may add something like this to
+your app:
+
+	@SuppressLint("ClickableViewAccessibility")
+	private void setTapToFocus() {
+		final Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				cameraView.setFocusArea(null);
+			}
+		};
+		cameraView.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				Camera camera = cameraView.getCamera();
+				if (camera != null && event.getActionMasked() ==
+						MotionEvent.ACTION_UP) {
+					camera.cancelAutoFocus();
+					cameraView.setFocusArea(cameraView.calculateFocusRect(
+							event.getX(),
+							event.getY(),
+							100));
+					camera.autoFocus(new Camera.AutoFocusCallback() {
+						@Override
+						public void onAutoFocus(boolean success,
+								Camera camera) {
+							cameraView.removeCallbacks(runnable);
+							cameraView.postDelayed(runnable, 3000);
+						}
+					});
+					v.performClick();
+				}
+				return true;
+			}
+		});
+	}
+
+Just invoke `setTapToFocus()` after `cameraView` has been initialized.
+
+## Scene modes
+
+You may use a predefined scene mode to use optimized camera parameters for
+a specific purpose. Consequently, setting a scene mode may override previously
+set camera parameters, of course.
+
+For example, to use `SCENE_MODE_BARCODE` (if it's available) do:
+
+	cameraView.setOnCameraListener(new OnCameraListener {
+		@Override
+		public void onConfigureParameters(Camera.Parameters parameters) {
+			List<String> modes = parameters.getSupportedSceneModes();
+			if (modes != null) {
+				for (String mode : modes) {
+					if (Camera.Parameters.SCENE_MODE_BARCODE.equals(mode)) {
+						parameters.setSceneMode(mode);
+						break;
+					}
+				}
+			}
+			...
+		}
+		...
+
+Please note, not all devices support scene modes.
+
 ## Demo
 
-This is a demo app you may use to see and try if this widget is what
-you're searching for. Either import it into Android Studio or, if you're
-not on that thing from Redmond, just type make to build, install and run.
+You can run the enclosed demo app to see if this widget is what you want.
+Either import it into Android Studio or, if you're not on that thing from
+Redmond, just type `make` to build, install and run.
+
+Tap on the screen to switch between the front and back camera.
 
 ## License
 
