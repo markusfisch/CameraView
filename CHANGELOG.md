@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.8.0
+* Adds setTapToFocus() to enable tap to focus
+
 ## 1.7.2
 * Expose findBestPreviewSize() to ease setting a custom preview size
 
