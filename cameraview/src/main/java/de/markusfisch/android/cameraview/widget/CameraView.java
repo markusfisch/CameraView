@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -25,13 +26,9 @@ import java.util.List;
 public class CameraView extends FrameLayout {
 	public interface OnCameraListener {
 		void onConfigureParameters(Camera.Parameters parameters);
-
 		void onCameraError();
-
 		void onCameraReady(Camera camera);
-
 		void onPreviewStarted(Camera camera);
-
 		void onCameraStopping(Camera camera);
 	}
 
@@ -114,6 +111,41 @@ public class CameraView extends FrameLayout {
 		}
 
 		return true;
+	}
+
+	// overriding `View.performClick()` wouldn't make any sense here
+	@SuppressLint("ClickableViewAccessibility")
+	public void setTapToFocus() {
+		final Runnable runnable = new Runnable() {
+			@Override
+			public void run() {
+				setFocusArea(null);
+			}
+		};
+		setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				Camera camera = getCamera();
+				if (camera != null && event.getActionMasked() ==
+						MotionEvent.ACTION_UP) {
+					camera.cancelAutoFocus();
+					setFocusArea(calculateFocusRect(
+							event.getX(),
+							event.getY(),
+							100));
+					camera.autoFocus(new Camera.AutoFocusCallback() {
+						@Override
+						public void onAutoFocus(boolean success,
+								Camera camera) {
+							removeCallbacks(runnable);
+							postDelayed(runnable, 3000);
+						}
+					});
+					v.performClick();
+				}
+				return true;
+			}
+		});
 	}
 
 	public static Camera.Size findBestPreviewSize(

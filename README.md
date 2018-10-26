@@ -143,44 +143,12 @@ that sport this feature:
 
 ## Tap to focus
 
-To focus where a user taps on screen, you may add something like this to
-your app:
+To make the CameraView focus where a user taps, simply call `setTapToFocus()`
+on your `cameraView` instance:
 
-	@SuppressLint("ClickableViewAccessibility")
-	private void setTapToFocus() {
-		final Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				cameraView.setFocusArea(null);
-			}
-		};
-		cameraView.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				Camera camera = cameraView.getCamera();
-				if (camera != null && event.getActionMasked() ==
-						MotionEvent.ACTION_UP) {
-					camera.cancelAutoFocus();
-					cameraView.setFocusArea(cameraView.calculateFocusRect(
-							event.getX(),
-							event.getY(),
-							100));
-					camera.autoFocus(new Camera.AutoFocusCallback() {
-						@Override
-						public void onAutoFocus(boolean success,
-								Camera camera) {
-							cameraView.removeCallbacks(runnable);
-							cameraView.postDelayed(runnable, 3000);
-						}
-					});
-					v.performClick();
-				}
-				return true;
-			}
-		});
-	}
+	cameraView.setTapToFocus();
 
-Just invoke `setTapToFocus()` after `cameraView` has been initialized.
+This adds a `View.OnTouchListener` to the view to process the tap.
 
 ## Scene modes
 
