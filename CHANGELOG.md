@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.8.1
+* Reactivate JitPack support
+
 ## 1.8.0
 * Adds setTapToFocus() to enable tap to focus
 
