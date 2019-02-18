@@ -6,8 +6,9 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.SensorManager;
-import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -33,11 +34,8 @@ public class CameraView extends FrameLayout {
 	}
 
 	public final Rect previewRect = new Rect();
-
-	private boolean isOpen = false;
 	private boolean useOrientationListener = false;
 	private Camera cam;
-	private int tries = 0;
 	private int viewWidth;
 	private int viewHeight;
 	private int frameWidth;
@@ -45,6 +43,7 @@ public class CameraView extends FrameLayout {
 	private int frameOrientation;
 	private OnCameraListener cameraListener;
 	private OrientationEventListener orientationListener;
+	private HandlerThread cameraCallbackThread;
 
 	public static int findCameraId(int facing) {
 		for (int i = 0, l = Camera.getNumberOfCameras(); i < l; ++i) {
@@ -199,89 +198,81 @@ public class CameraView extends FrameLayout {
 		useOrientationListener = use;
 	}
 
-	// this AsyncTask is running for a short and finite time only
-	// and it's perfectly okay to delay garbage collection of the
-	// parent instance until this task has ended
-	@SuppressLint("StaticFieldLeak")
 	public void openAsync(final int cameraId) {
-		if (isOpen) {
+		if (cameraCallbackThread != null) {
 			return;
 		}
-		isOpen = true;
-		new AsyncTask<Void, Void, Camera>() {
-			@Override
-			protected Camera doInBackground(Void... nothings) {
-				if (cam != null) {
-					return null;
-				}
-				try {
-					// open() may take a while so it shouldn't be
-					// invoked on the main thread according to the docs
-					return Camera.open(cameraId);
-				} catch (RuntimeException e) {
-					return null;
-				}
-			}
 
+		cameraCallbackThread = new HandlerThread(
+				"CameraCallbackHandlerThread");
+		cameraCallbackThread.start();
+		Handler callbackThreadHandler = new Handler(
+				cameraCallbackThread.getLooper());
+		callbackThreadHandler.post(new Runnable() {
 			@Override
-			protected void onPostExecute(Camera camera) {
-				if (!isOpen) {
-					// close() was called while Camera.open() was
-					// running on another thread
-					if (camera != null) {
-						camera.release();
+			public void run() {
+				try {
+					// Use the cameraCallbackThread to open the camera
+					// All camera callbacks will be invoked from this thread
+					// See https://developer.android.com/reference/android/hardware/Camera
+					cam = Camera.open(cameraId);
+					final Context context = getContext();
+
+					if (context == null) {
+						// view is not resumed any more
+						postClose();
+						return;
 					}
-					return;
-				}
-				if (camera == null) {
-					if (cameraListener != null &&
-							// only throw onCameraError() if there
-							// isn't an open camera yet
-							cam == null) {
-						if (tries < 3) {
-							isOpen = false;
-							openAsync(cameraId);
-							++tries;
-						} else {
-							cameraListener.onCameraError();
-						}
+
+					if (useOrientationListener) {
+						enableOrientationListener(context, cameraId);
 					}
-					return;
-				}
-				tries = 0;
-				cam = camera;
-				Context context = getContext();
-				if (context == null) {
-					close();
-					return;
-				}
-				if (useOrientationListener) {
-					enableOrientationListener(context, cameraId);
-				}
-				frameOrientation = getRelativeCameraOrientation(
-						context,
-						cameraId);
-				if (viewWidth > 0) {
-					addPreview(context);
+					frameOrientation = getRelativeCameraOrientation(
+							context,
+							cameraId);
+					if (viewWidth > 0) {
+						postAddPreview(context);
+					}
+				} catch (RuntimeException e) {
+					if (cameraListener != null) {
+						cameraListener.onCameraError();
+					}
 				}
 			}
-		}.execute();
+		});
+	}
+
+	private void postClose() {
+		post(new Runnable() {
+			@Override
+			public void run() {
+				close();
+			}
+		});
 	}
 
 	public void close() {
-		isOpen = false;
 		if (cam != null) {
-			if (orientationListener != null) {
-				orientationListener.disable();
-				orientationListener = null;
-			}
-			if (cameraListener != null) {
-				cameraListener.onCameraStopping(cam);
-			}
 			cam.stopPreview();
 			cam.setPreviewCallback(null);
 			cam.release();
 			cam = null;
+		}
+		if (orientationListener != null) {
+			orientationListener.disable();
+			orientationListener = null;
+		}
+		if (cameraCallbackThread != null) {
+			// terminate cameraCallbackThread, discard all pending messages
+			cameraCallbackThread.quit();
+			try {
+				cameraCallbackThread.join();
+			} catch (InterruptedException ignore) {
+			}
+			cameraCallbackThread = null;
+		}
+		if (cam != null && cameraListener != null) {
+			cameraListener.onCameraStopping(cam);
 		}
 		removeAllViews();
 	}
@@ -381,6 +372,15 @@ public class CameraView extends FrameLayout {
 			}
 		};
 		orientationListener.enable();
+	}
+
+	private void postAddPreview(final Context context) {
+		post(new Runnable() {
+			@Override
+			public void run() {
+				addPreview(context);
+			}
+		});
 	}
 
 	private void addPreview(Context context) {
