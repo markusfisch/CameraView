@@ -373,6 +373,13 @@ public class CameraView extends FrameLayout {
 		}
 		tries = 0;
 		cam = camera;
+		camera.setErrorCallback(new Camera.ErrorCallback() {
+			public void onError(int error, Camera camera) {
+				if (cameraListener != null) {
+					cameraListener.onCameraError();
+				}
+			}
+		});
 		Context context = getContext();
 		if (context == null) {
 			close();
