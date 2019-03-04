@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.2
+* Make CameraView.PreviewCallback.onPreviewFrame() run in a background thread
+* Forward camera errors to OnCameraListener.onCameraError()
+
 ## 1.8.1
 * Reactivate JitPack support
 
