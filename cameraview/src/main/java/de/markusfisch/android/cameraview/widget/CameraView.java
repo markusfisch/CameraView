@@ -6,8 +6,9 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.hardware.SensorManager;
-import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -36,15 +37,16 @@ public class CameraView extends FrameLayout {
 
 	private boolean isOpen = false;
 	private boolean useOrientationListener = false;
+	private OnCameraListener cameraListener;
+	private HandlerThread cameraCallbackThread;
 	private Camera cam;
+	private OrientationEventListener orientationListener;
 	private int tries = 0;
 	private int viewWidth;
 	private int viewHeight;
 	private int frameWidth;
 	private int frameHeight;
 	private int frameOrientation;
-	private OnCameraListener cameraListener;
-	private OrientationEventListener orientationListener;
 
 	public static int findCameraId(int facing) {
 		for (int i = 0, l = Camera.getNumberOfCameras(); i < l; ++i) {
@@ -199,82 +201,55 @@ public class CameraView extends FrameLayout {
 		useOrientationListener = use;
 	}
 
-	// this AsyncTask is running for a short and finite time only
-	// and it's perfectly okay to delay garbage collection of the
-	// parent instance until this task has ended
-	@SuppressLint("StaticFieldLeak")
 	public void openAsync(final int cameraId) {
-		if (isOpen) {
+		if (isOpen || cameraCallbackThread != null) {
 			return;
 		}
 		isOpen = true;
-		new AsyncTask<Void, Void, Camera>() {
+		// use a HandlerThread so future preview callbacks are invoked
+		// from this background thread; an AsyncTask is terminated after
+		// runInBackground() ends
+		cameraCallbackThread = new HandlerThread(
+				"CameraCallbackHandlerThread");
+		cameraCallbackThread.start();
+		Handler callbackThreadHandler = new Handler(
+				cameraCallbackThread.getLooper());
+		callbackThreadHandler.post(new Runnable() {
 			@Override
-			protected Camera doInBackground(Void... nothings) {
+			public void run() {
+				// abort if there's already an open camera
 				if (cam != null) {
-					return null;
+					return;
 				}
-				try {
-					// open() may take a while so it shouldn't be
-					// invoked on the main thread according to the docs
-					return Camera.open(cameraId);
-				} catch (RuntimeException e) {
-					return null;
-				}
-			}
-
-			@Override
-			protected void onPostExecute(Camera camera) {
-				if (!isOpen) {
-					// close() was called while Camera.open() was
-					// running on another thread
-					if (camera != null) {
-						camera.release();
+				// Camera.open() may take a while so it shouldn't be
+				// invoked on the main thread according to the docs
+				final Camera camera = openCameraAndCatch(cameraId);
+				CameraView.this.post(new Runnable() {
+					@Override
+					public void run() {
+						initCamera(camera, cameraId);
 					}
-					return;
-				}
-				if (camera == null) {
-					if (cameraListener != null &&
-							// only throw onCameraError() if there
-							// isn't an open camera yet
-							cam == null) {
-						if (tries < 3) {
-							isOpen = false;
-							openAsync(cameraId);
-							++tries;
-						} else {
-							cameraListener.onCameraError();
-						}
-					}
-					return;
-				}
-				tries = 0;
-				cam = camera;
-				Context context = getContext();
-				if (context == null) {
-					close();
-					return;
-				}
-				if (useOrientationListener) {
-					enableOrientationListener(context, cameraId);
-				}
-				frameOrientation = getRelativeCameraOrientation(
-						context,
-						cameraId);
-				if (viewWidth > 0) {
-					addPreview(context);
-				}
+				});
 			}
-		}.execute();
+		});
 	}
 
 	public void close() {
 		isOpen = false;
-		if (cam != null) {
-			if (orientationListener != null) {
-				orientationListener.disable();
-				orientationListener = null;
+		if (orientationListener != null) {
+			orientationListener.disable();
+			orientationListener = null;
+		}
+		if (cameraCallbackThread != null) {
+			// terminate cameraCallbackThread, discard all pending messages
+			cameraCallbackThread.quit();
+			try {
+				cameraCallbackThread.join();
+			} catch (InterruptedException ignore) {
 			}
+			cameraCallbackThread = null;
+		}
+		if (cam != null) {
 			if (cameraListener != null) {
 				cameraListener.onCameraStopping(cam);
 			}
@@ -360,6 +335,54 @@ public class CameraView extends FrameLayout {
 			if (context == null) {
 				return;
 			}
+			addPreview(context);
+		}
+	}
+
+	private static Camera openCameraAndCatch(int cameraId) {
+		try {
+			return Camera.open(cameraId);
+		} catch (RuntimeException e) {
+			return null;
+		}
+	}
+
+	private void initCamera(Camera camera, int cameraId) {
+		if (!isOpen) {
+			// close() was called while Camera.open() was
+			// running on another thread
+			if (camera != null) {
+				camera.release();
+			}
+			return;
+		}
+		if (camera == null) {
+			if (cameraListener != null &&
+					// only invoke onCameraError() if there
+					// isn't an open camera yet
+					cam == null) {
+				if (tries < 3) {
+					isOpen = false;
+					openAsync(cameraId);
+					++tries;
+				} else {
+					cameraListener.onCameraError();
+				}
+			}
+			return;
+		}
+		tries = 0;
+		cam = camera;
+		Context context = getContext();
+		if (context == null) {
+			close();
+			return;
+		}
+		if (useOrientationListener) {
+			enableOrientationListener(context, cameraId);
+		}
+		frameOrientation = getRelativeCameraOrientation(context, cameraId);
+		if (viewWidth > 0) {
 			addPreview(context);
 		}
 	}
