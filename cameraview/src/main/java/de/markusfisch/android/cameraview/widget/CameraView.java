@@ -240,15 +240,6 @@ public class CameraView extends FrameLayout {
 			orientationListener.disable();
 			orientationListener = null;
 		}
-		if (cameraCallbackThread != null) {
-			// terminate cameraCallbackThread, discard all pending messages
-			cameraCallbackThread.quit();
-			try {
-				cameraCallbackThread.join();
-			} catch (InterruptedException ignore) {
-			}
-			cameraCallbackThread = null;
-		}
 		if (cam != null) {
 			if (cameraListener != null) {
 				cameraListener.onCameraStopping(cam);
@@ -257,6 +248,15 @@ public class CameraView extends FrameLayout {
 			cam.setPreviewCallback(null);
 			cam.release();
 			cam = null;
+		}
+		if (cameraCallbackThread != null) {
+			// terminate cameraCallbackThread, discard all pending messages
+			cameraCallbackThread.quit();
+			try {
+				cameraCallbackThread.join();
+			} catch (InterruptedException ignore) {
+			}
+			cameraCallbackThread = null;
 		}
 		removeAllViews();
 	}
