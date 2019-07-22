@@ -130,19 +130,28 @@ public class CameraView extends FrameLayout {
 				Camera camera = getCamera();
 				if (camera != null && event.getActionMasked() ==
 						MotionEvent.ACTION_UP) {
-					camera.cancelAutoFocus();
-					setFocusArea(calculateFocusRect(
-							event.getX(),
-							event.getY(),
-							100));
-					camera.autoFocus(new Camera.AutoFocusCallback() {
-						@Override
-						public void onAutoFocus(boolean success,
-								Camera camera) {
-							removeCallbacks(runnable);
-							postDelayed(runnable, 3000);
+					// catch possible RuntimeException's for autoFocus()
+					// as there a devices with broken camera drivers
+					try {
+						camera.cancelAutoFocus();
+						if (!setFocusArea(calculateFocusRect(
+								event.getX(),
+								event.getY(),
+								100))) {
+							return false;
 						}
-					});
+						camera.autoFocus(new Camera.AutoFocusCallback() {
+							@Override
+							public void onAutoFocus(boolean success,
+									Camera camera) {
+								removeCallbacks(runnable);
+								postDelayed(runnable, 3000);
+							}
+						});
+					} catch (RuntimeException e) {
+						setOnTouchListener(null);
+						return false;
+					}
 					v.performClick();
 				}
 				return true;
