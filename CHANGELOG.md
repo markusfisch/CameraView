@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.8.4
+* Catch possible RuntimeException on autoFocus()
+
 ## 1.8.3
 * Terminate HandlerThread after closing camera
 
