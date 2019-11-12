@@ -6,9 +6,27 @@ into available view space and works with Gingerbread (minSDK 9) or better
 
 ## How to include
 
-### Android Archive
+### Gradle
 
-Just download the latest `aar` from
+Add the JitPack repository in your root build.gradle at the end of
+repositories:
+
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+
+Then add the dependency in your app/build.gradle:
+
+	dependencies {
+		compile 'com.github.markusfisch:CameraView:1.8.4'
+	}
+
+### Manually
+
+Alternatively you may just download the latest `aar` from
 [Releases](https://github.com/markusfisch/CameraView/releases) and put it
 into `app/libs` in your app.
 
