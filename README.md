@@ -18,7 +18,9 @@ you may want to use the new
 [CameraX support library](https://developer.android.com/training/camerax)
 (available from API level 21).
 
-In there, you will finally find a `CameraView` class as part of the SDK.
+There, we finally find a
+[CameraView](https://developer.android.com/reference/androidx/camera/view/CameraView.html)
+class as part of the SDK.
 
 ## How to include
 
