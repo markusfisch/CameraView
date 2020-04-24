@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.9.0
+* Add focusTo() to manually focus to some spot
+
 ## 1.8.4
 * Catch possible RuntimeException on autoFocus()
 
