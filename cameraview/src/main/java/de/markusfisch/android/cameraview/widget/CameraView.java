@@ -35,6 +35,13 @@ public class CameraView extends FrameLayout {
 
 	public final Rect previewRect = new Rect();
 
+	private final Runnable focusRunnable = new Runnable() {
+		@Override
+		public void run() {
+			setFocusArea(null);
+		}
+	};
+
 	private boolean isOpen = false;
 	private boolean useOrientationListener = false;
 	private OnCameraListener cameraListener;
@@ -118,45 +125,42 @@ public class CameraView extends FrameLayout {
 	// overriding `View.performClick()` wouldn't make any sense here
 	@SuppressLint("ClickableViewAccessibility")
 	public void setTapToFocus() {
-		final Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				setFocusArea(null);
-			}
-		};
 		setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				Camera camera = getCamera();
-				if (camera != null && event.getActionMasked() ==
-						MotionEvent.ACTION_UP) {
-					// catch possible RuntimeException's for autoFocus()
-					// as there a devices with broken camera drivers
-					try {
-						camera.cancelAutoFocus();
-						if (!setFocusArea(calculateFocusRect(
-								event.getX(),
-								event.getY(),
-								100))) {
-							return false;
-						}
-						camera.autoFocus(new Camera.AutoFocusCallback() {
-							@Override
-							public void onAutoFocus(boolean success,
-									Camera camera) {
-								removeCallbacks(runnable);
-								postDelayed(runnable, 3000);
-							}
-						});
-					} catch (RuntimeException e) {
-						setOnTouchListener(null);
-						return false;
-					}
-					v.performClick();
+				if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+					return focusTo(v, event.getX(), event.getY());
 				}
 				return true;
 			}
 		});
+	}
+
+	public boolean focusTo(final View v, float x, float y) {
+		Camera camera = getCamera();
+		if (camera == null) {
+			return false;
+		}
+		// catch possible RuntimeException's for autoFocus()
+		// as there a devices with broken camera drivers
+		try {
+			camera.cancelAutoFocus();
+			if (!setFocusArea(calculateFocusRect(x, y, 100))) {
+				return false;
+			}
+			camera.autoFocus(new Camera.AutoFocusCallback() {
+				@Override
+				public void onAutoFocus(boolean success, Camera camera) {
+					v.removeCallbacks(focusRunnable);
+					v.postDelayed(focusRunnable, 3000);
+				}
+			});
+		} catch (RuntimeException e) {
+			v.setOnTouchListener(null);
+			return false;
+		}
+		v.performClick();
+		return true;
 	}
 
 	public static Camera.Size findBestPreviewSize(
