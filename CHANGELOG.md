@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.9.1
+* Don't reset touch listener in focusTo()
+
 ## 1.9.0
 * Add focusTo() to manually focus to some spot
 
