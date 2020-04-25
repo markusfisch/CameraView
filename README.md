@@ -186,12 +186,17 @@ on your `cameraView` instance:
 
 This adds a `View.OnTouchListener` to the `CameraView` to process the tap.
 
-If you want to use a custom `View.OnTouchListener`, you can manually call
-`focusTo()` in that listener instead using `setTapToFocus()`:
+If you want to use a custom `View.OnTouchListener`, you can call `focusTo()`
+manually in your touch listener instead of using `setTapToFocus()`:
 
 	if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-		return focusTo(cameraView, event.getX(), event.getY());
+		boolean success = focusTo(cameraView, event.getX(), event.getY());
+		...
 	}
+
+If `focusTo()` returns `false`, you should stop calling it because that
+means there was a `RuntimeException` that will be thrown (and catched) in
+the future too.
 
 ## Scene modes
 

@@ -128,27 +128,29 @@ public class CameraView extends FrameLayout {
 		setOnTouchListener(new View.OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-					return focusTo(v, event.getX(), event.getY());
+				if (event.getActionMasked() == MotionEvent.ACTION_UP &&
+						!focusTo(v, event.getX(), event.getY())) {
+					v.setOnTouchListener(null);
+					return false;
 				}
+				v.performClick();
 				return true;
 			}
 		});
 	}
 
 	public boolean focusTo(final View v, float x, float y) {
-		Camera camera = getCamera();
-		if (camera == null) {
+		if (cam == null) {
 			return false;
 		}
 		// catch possible RuntimeException's for autoFocus()
 		// as there a devices with broken camera drivers
 		try {
-			camera.cancelAutoFocus();
+			cam.cancelAutoFocus();
 			if (!setFocusArea(calculateFocusRect(x, y, 100))) {
 				return false;
 			}
-			camera.autoFocus(new Camera.AutoFocusCallback() {
+			cam.autoFocus(new Camera.AutoFocusCallback() {
 				@Override
 				public void onAutoFocus(boolean success, Camera camera) {
 					v.removeCallbacks(focusRunnable);
@@ -156,10 +158,8 @@ public class CameraView extends FrameLayout {
 				}
 			});
 		} catch (RuntimeException e) {
-			v.setOnTouchListener(null);
 			return false;
 		}
-		v.performClick();
 		return true;
 	}
 
