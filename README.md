@@ -18,9 +18,11 @@ you may want to use the new
 [CameraX support library](https://developer.android.com/training/camerax)
 (available from API level 21).
 
-There, we finally find a
-[CameraView](https://developer.android.com/reference/androidx/camera/view/CameraView.html)
-class as part of the SDK.
+There, we finally find
+[PreviewView](https://developer.android.com/reference/androidx/camera/view/PreviewView)
+as part of the SDK. You can read
+[here](https://developer.android.com/training/camerax/preview)
+how to implement it.
 
 ## How to include
 
