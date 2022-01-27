@@ -10,9 +10,7 @@ buildscript {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-
-group = 'com.github.markusfisch'
+apply plugin: 'maven-publish'
 
 android {
 	compileSdkVersion sdk_version
@@ -28,4 +26,17 @@ android {
 
 dependencies {
 	implementation "com.android.support:appcompat-v7:$support_version"
+}
+
+afterEvaluate {
+	publishing {
+		publications {
+			release(MavenPublication) {
+				from components.release
+				groupId = 'com.github.markusfisch'
+				artifactId = 'final'
+				version = '1.9.1'
+			}
+		}
+	}
 }
