@@ -16,7 +16,6 @@ group = 'com.github.markusfisch'
 
 android {
 	compileSdkVersion sdk_version
-	buildToolsVersion build_tools_version
 
 	defaultConfig {
 		minSdkVersion 9
