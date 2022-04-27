@@ -11,11 +11,7 @@ This library is deliberately still on API level 9 (Android 2.3).
 
 If you're not interested in supporting old versions of Android and/or
 don't want to use the deprecated Camera API on newer devices, have a look at
-[cameraview-ex](https://github.com/pvasa/cameraview-ex).
-
-If you want to use the latest camera features on the latest devices,
-you may want to use the new
-[CameraX support library](https://developer.android.com/training/camerax)
+the [CameraX support library](https://developer.android.com/training/camerax)
 (available from API level 21).
 
 There, we finally find
