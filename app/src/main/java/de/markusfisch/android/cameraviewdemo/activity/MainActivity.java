@@ -1,22 +1,18 @@
 package de.markusfisch.android.cameraviewdemo.activity;
 
-import de.markusfisch.android.cameraview.widget.CameraView;
-
-import de.markusfisch.android.cameraviewdemo.R;
-
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import de.markusfisch.android.cameraview.widget.CameraView;
+import de.markusfisch.android.cameraviewdemo.R;
+
+public class MainActivity extends Activity {
 	private static final int REQUEST_CAMERA = 1;
 
 	private static boolean frontFacing = false;
@@ -26,21 +22,16 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onRequestPermissionsResult(
 			int requestCode,
-			@NonNull String permissions[],
-			@NonNull int grantResults[]) {
-		switch (requestCode) {
-			case REQUEST_CAMERA:
-				if (grantResults.length > 0 &&
-						grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-					Toast.makeText(
-							this,
-							R.string.error_camera,
-							Toast.LENGTH_SHORT).show();
-					finish();
-				}
-				break;
-			default:
-				break;
+			String[] permissions,
+			int[] grantResults) {
+		if (requestCode == REQUEST_CAMERA &&
+				grantResults.length > 0 &&
+				grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+			Toast.makeText(
+					this,
+					R.string.error_camera,
+					Toast.LENGTH_SHORT).show();
+			finish();
 		}
 	}
 
@@ -55,12 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
 		cameraView = new CameraView(this);
 		cameraView.setUseOrientationListener(true);
-		cameraView.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				invertCamera();
-			}
-		});
+		cameraView.setOnClickListener(v -> invertCamera());
 
 		setContentView(cameraView);
 	}
@@ -78,14 +64,12 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void checkPermissions() {
-		String permission = android.Manifest.permission.CAMERA;
-
-		if (ContextCompat.checkSelfPermission(this, permission) !=
-				PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(
-					this,
-					new String[]{permission},
-					REQUEST_CAMERA);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			String permission = android.Manifest.permission.CAMERA;
+			if (checkSelfPermission(permission) !=
+					PackageManager.PERMISSION_GRANTED) {
+				requestPermissions(new String[]{permission}, REQUEST_CAMERA);
+			}
 		}
 	}
 

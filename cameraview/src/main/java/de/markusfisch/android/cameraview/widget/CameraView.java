@@ -27,9 +27,13 @@ import java.util.List;
 public class CameraView extends FrameLayout {
 	public interface OnCameraListener {
 		void onConfigureParameters(Camera.Parameters parameters);
+
 		void onCameraError();
+
 		void onCameraReady(Camera camera);
+
 		void onPreviewStarted(Camera camera);
+
 		void onCameraStopping(Camera camera);
 	}
 
