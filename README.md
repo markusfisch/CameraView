@@ -109,7 +109,7 @@ frame, set an OnCameraListener:
 		}
 
 		@Override
-		public void onCameraError(Camera camera) {
+		public void onCameraError() {
 			// handle camera errors
 		}
 
