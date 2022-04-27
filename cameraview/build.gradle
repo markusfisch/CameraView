@@ -19,8 +19,8 @@ android {
 		minSdkVersion 9
 		targetSdkVersion sdk_version
 
-		versionCode 21
-		versionName '1.9.1'
+		versionCode 22
+		versionName '1.9.2'
 	}
 }
 
@@ -31,7 +31,7 @@ afterEvaluate {
 				from components.release
 				groupId = 'com.github.markusfisch'
 				artifactId = 'final'
-				version = '1.9.1'
+				version = '1.9.2'
 			}
 		}
 	}

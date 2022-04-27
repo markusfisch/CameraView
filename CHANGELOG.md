@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.9.2
+* Remove appcompat dependency
+
 ## 1.9.1
 * Don't reset touch listener in focusTo()
 

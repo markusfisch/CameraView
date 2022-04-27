@@ -41,7 +41,7 @@ repositories:
 Then add the dependency in your app/build.gradle:
 
 	dependencies {
-		implementation 'com.github.markusfisch:CameraView:1.9.1'
+		implementation 'com.github.markusfisch:CameraView:1.9.2'
 	}
 
 ### Manually
