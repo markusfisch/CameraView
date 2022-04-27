@@ -30,7 +30,7 @@ repositories:
 ```groovy
 allprojects {
 	repositories {
-		...
+		…
 		maven { url 'https://jitpack.io' }
 	}
 }
@@ -56,7 +56,7 @@ Then make sure your `app/build.gradle` contains the following line in the
 ```groovy
 dependencies {
 	implementation fileTree(dir: 'libs', include: '*')
-	...
+	…
 }
 ```
 
@@ -160,9 +160,9 @@ cameraView.setOnCameraListener(new OnCameraListener {
 				cameraView.getFrameWidth() * 1000,
 				cameraView.getFrameHeight() * 1000);
 		parameters.setPreviewSize(size.width, size.height);
-		...
+		…
 	}
-	...
+	…
 ```
 
 `CameraView.findBestPreviewSize()` returns the preview resolution that has
@@ -179,9 +179,9 @@ cameraView.setOnCameraListener(new OnCameraListener {
 	@Override
 	public void onConfigureParameters(Camera.Parameters parameters) {
 		CameraView.setAutoFocus(parameters);
-		...
+		…
 	}
-	...
+	…
 ```
 
 `CameraView.setAutoFocus()` picks the best available Auto Focus mode for
@@ -214,7 +214,7 @@ manually in your touch listener instead of using `setTapToFocus()`:
 ```java
 if (event.getActionMasked() == MotionEvent.ACTION_UP) {
 	boolean success = focusTo(cameraView, event.getX(), event.getY());
-	...
+	…
 }
 ```
 
@@ -243,9 +243,9 @@ cameraView.setOnCameraListener(new OnCameraListener {
 				}
 			}
 		}
-		...
+		…
 	}
-	...
+	…
 ```
 
 Please note, not all devices support scene modes.
