@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		tools_version = '7.1.3'
+		tools_version = '7.2.0'
 		sdk_version = 32
 	}
 
