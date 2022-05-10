@@ -13,6 +13,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
+	namespace 'de.markusfisch.android.cameraview'
 	compileSdkVersion sdk_version
 
 	defaultConfig {
