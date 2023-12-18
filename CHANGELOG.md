@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.10.0
+* Add setScaleType to control camera preview layout
+
 ## 1.9.2
 * Remove appcompat dependency
 

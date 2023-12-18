@@ -21,7 +21,7 @@ android {
 		targetSdkVersion sdk_version
 
 		versionCode 22
-		versionName '1.9.2'
+		versionName '1.10.0'
 	}
 }
 
@@ -32,7 +32,7 @@ afterEvaluate {
 				from components.release
 				groupId = 'com.github.markusfisch'
 				artifactId = 'final'
-				version = '1.9.2'
+				version = '1.10.0'
 			}
 		}
 	}

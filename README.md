@@ -40,7 +40,7 @@ Then add the dependency in your app/build.gradle:
 
 ```groovy
 dependencies {
-	implementation 'com.github.markusfisch:CameraView:1.9.2'
+	implementation 'com.github.markusfisch:CameraView:1.10.0'
 }
 ```
 
