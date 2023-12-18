@@ -37,6 +37,9 @@ public class CameraView extends FrameLayout {
 		void onCameraStopping(Camera camera);
 	}
 
+	public static final int SCALE_TYPE_CENTER_CROP = 0;
+	public static final int SCALE_TYPE_CENTER_INSIDE = 1;
+
 	public final Rect previewRect = new Rect();
 
 	private final Runnable focusRunnable = new Runnable() {
@@ -52,6 +55,7 @@ public class CameraView extends FrameLayout {
 	private HandlerThread cameraCallbackThread;
 	private Camera cam;
 	private OrientationEventListener orientationListener;
+	private int scaleType = SCALE_TYPE_CENTER_CROP;
 	private int tries = 0;
 	private int viewWidth;
 	private int viewHeight;
@@ -216,6 +220,10 @@ public class CameraView extends FrameLayout {
 
 	public void setUseOrientationListener(boolean use) {
 		useOrientationListener = use;
+	}
+
+	public void setScaleType(int scaleType) {
+		this.scaleType = scaleType;
 	}
 
 	public void openAsync(final int cameraId) {
@@ -539,7 +547,8 @@ public class CameraView extends FrameLayout {
 				surfaceView,
 				surfaceWidth,
 				surfaceHeight,
-				previewRect);
+				previewRect,
+				scaleType == SCALE_TYPE_CENTER_INSIDE);
 	}
 
 	private static void setChildLayout(
@@ -548,11 +557,12 @@ public class CameraView extends FrameLayout {
 			View child,
 			int childWidth,
 			int childHeight,
-			Rect childRect) {
+			Rect childRect,
+			boolean centerInside) {
 		int widthByHeight = width * childHeight;
 		int heightByWidth = height * childWidth;
-		boolean dontScaleBeyondScreen = Build.VERSION.SDK_INT <
-				Build.VERSION_CODES.ICE_CREAM_SANDWICH;
+		boolean dontScaleBeyondScreen = centerInside ||
+				Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH;
 
 		if (dontScaleBeyondScreen ?
 				// center within parent view

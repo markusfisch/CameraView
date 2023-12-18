@@ -169,6 +169,19 @@ cameraView.setOnCameraListener(new OnCameraListener {
 the smallest absolute distance to the given dimensions *and* is as close to
 the aspect ratio of those dimensions as possible.
 
+## Preview layout
+
+On some devices, the camera frame has a different aspect ratio than the
+screen. The camera preview can either be laid so that it completely covers
+the available `View` area (which is `SCALE_TYPE_CENTER_CROP`, the default),
+or so that it lies completely within it (`SCALE_TYPE_CENTER_INSIDE`).
+
+Use `CameraView.setScaleType()` with the appropriate constant:
+
+```java
+cameraView.setScaleType(CameraView.SCALE_TYPE_CENTER_INSIDE);
+```
+
 ## Auto Focus
 
 To enable Auto Focus, you should run `CameraView.setAutoFocus()` in
