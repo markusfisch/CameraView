@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-	namespace 'de.markusfisch.android.cameraviewdemo'
-	compileSdkVersion sdk_version
+	namespace = 'de.markusfisch.android.cameraviewdemo'
+	compileSdk sdk_version
 
 	defaultConfig {
-		minSdkVersion 9
-		targetSdkVersion sdk_version
+		minSdk 9
+		targetSdk sdk_version
 
 		versionCode 1
 		versionName '0.0.0'

@@ -13,15 +13,19 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
-	namespace 'de.markusfisch.android.cameraview'
-	compileSdkVersion sdk_version
+	namespace = 'de.markusfisch.android.cameraview'
+	compileSdk sdk_version
 
 	defaultConfig {
-		minSdkVersion 9
-		targetSdkVersion sdk_version
+		minSdk 9
+		targetSdk sdk_version
 
 		versionCode 22
 		versionName '1.10.0'
+	}
+
+	publishing {
+		singleVariant('release')
 	}
 }
 
