@@ -6,7 +6,7 @@ debug:
 	./gradlew assembleDebug
 
 lint:
-	./gradlew lintDebug
+	./gradlew :cameraview:lintDebug
 
 infer: clean
 	infer -- ./gradlew assembleDebug
