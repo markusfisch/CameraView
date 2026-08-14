@@ -9,6 +9,7 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -53,6 +54,7 @@ public class CameraView extends FrameLayout {
 	private boolean useOrientationListener = false;
 	private OnCameraListener cameraListener;
 	private HandlerThread cameraCallbackThread;
+	private SurfaceHolder previewHolder;
 	private Camera cam;
 	private OrientationEventListener orientationListener;
 	private int scaleType = SCALE_TYPE_CENTER_CROP;
@@ -283,6 +285,7 @@ public class CameraView extends FrameLayout {
 			}
 			cameraCallbackThread = null;
 		}
+		previewHolder = null;
 		removeAllViews();
 	}
 
@@ -505,6 +508,7 @@ public class CameraView extends FrameLayout {
 			int surfaceHeight) {
 		SurfaceView surfaceView = new SurfaceView(context);
 		SurfaceHolder holder = surfaceView.getHolder();
+		previewHolder = holder;
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		}
@@ -536,8 +540,16 @@ public class CameraView extends FrameLayout {
 			}
 
 			@Override
-			public void surfaceDestroyed(SurfaceHolder holder) {
-				close();
+			public void surfaceDestroyed(final SurfaceHolder holder) {
+				new Handler(Looper.getMainLooper()).post(new Runnable() {
+					@Override
+					public void run() {
+						if (holder == previewHolder &&
+								!holder.getSurface().isValid()) {
+							close();
+						}
+					}
+				});
 			}
 		});
 		addView(surfaceView);
