@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.10.2
+* Fix JitPack configuration
+
 ## 1.10.1
 * Defer closing camera after surface destruction
 
