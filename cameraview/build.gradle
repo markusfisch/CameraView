@@ -20,8 +20,8 @@ android {
 		minSdk 9
 		targetSdk sdk_version
 
-		versionCode 22
-		versionName '1.10.0'
+		versionCode 23
+		versionName '1.10.1'
 	}
 
 	publishing {
@@ -36,7 +36,7 @@ afterEvaluate {
 				from components.release
 				groupId = 'com.github.markusfisch'
 				artifactId = 'final'
-				version = '1.10.0'
+				version = '1.10.1'
 			}
 		}
 	}

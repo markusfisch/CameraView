@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.10.1
+* Defer closing camera after surface destruction
+
 ## 1.10.0
 * Add setScaleType to control camera preview layout
 
